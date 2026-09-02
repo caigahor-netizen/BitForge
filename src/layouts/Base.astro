@@ -1,0 +1,116 @@
+---
+import '../styles/global.css';
+import { NAV_LINKS, SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description = SITE_DESCRIPTION } = Astro.props;
+const path = Astro.url.pathname;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<link rel="sitemap" href="/sitemap-index.xml" />
+		<link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href="/rss.xml" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta name="generator" content={Astro.generator} />
+		<link rel="canonical" href={canonical} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={SITE_TITLE} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={Astro.url} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<script is:inline>
+			(function () {
+				var t = null;
+				try {
+					t = localStorage.getItem('bf-theme');
+				} catch (e) {}
+				if (t === 'light' || t === 'dark') {
+					document.documentElement.dataset.theme = t;
+				}
+			})();
+		</script>
+	</head>
+	<body>
+		<nav class="nav" aria-label="Main">
+			<div class="shell nav-inner">
+				<a class="brand" href="/">{SITE_TITLE}</a>
+				<div style="display:flex;align-items:center;gap:26px;">
+					<ul class="nav-links">
+						{
+							NAV_LINKS.map((l) => {
+								const current =
+									l.href === '/' ? path === '/' : path.startsWith(l.href);
+								return (
+									<li>
+										<a href={l.href} aria-current={current ? 'page' : undefined}>
+											{l.label}
+										</a>
+									</li>
+								);
+							})
+						}
+					</ul>
+					<button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch color theme">
+						<span id="theme-toggle-label">Theme</span>
+					</button>
+				</div>
+			</div>
+		</nav>
+
+		<slot />
+
+		<footer class="footer">
+			<div class="shell footer-inner">
+				<span>© {year} {SITE_AUTHOR} · {SITE_TITLE}</span>
+				<div class="footer-links">
+					<a href="https://github.com/caigahor-netizen">GitHub</a>
+					<a href="mailto:caigahor@gmail.com">Email</a>
+				</div>
+			</div>
+		</footer>
+
+		<script is:inline>
+			(function () {
+				var btn = document.getElementById('theme-toggle');
+				var lab = document.getElementById('theme-toggle-label');
+				if (!btn || !lab) return;
+				function current() {
+					var dt = document.documentElement.dataset.theme;
+					if (dt === 'dark' || dt === 'light') return dt;
+					return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				}
+				function render() {
+					lab.textContent = current() === 'dark' ? 'Light' : 'Dark';
+				}
+				btn.addEventListener('click', function () {
+					var next = current() === 'dark' ? 'light' : 'dark';
+					document.documentElement.dataset.theme = next;
+					try {
+						localStorage.setItem('bf-theme', next);
+					} catch (e) {}
+					render();
+				});
+				render();
+			})();
+		</script>
+	</body>
+</html>

@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { fmtDate } from '../../utils/date';
+
+const CATEGORY_ORDER = [
+	'Digital Power',
+	'Embedded',
+	'Electronics',
+	'DSP',
+	'Linux',
+	'Networking',
+	'Software',
+];
+
+const all = (await getCollection('notes')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const cats = [
+	...CATEGORY_ORDER,
+	...[...new Set(all.map((n) => n.data.category))].filter(
+		(c) => !CATEGORY_ORDER.includes(c),
+	),
+];
+---
+
+<Base title="Notes — BitForge">
+	<main class="shell">
+		<section class="page-head">
+			<p class="kicker">Technical notes</p>
+			<h1>Notes</h1>
+			<p class="lede">
+				Working notes from the bench and the terminal — kept short, specific, and
+				reproducible.
+			</p>
+		</section>
+
+		<div style="margin-bottom:110px;">
+			{
+				cats.map((cat) => {
+					const list = all.filter((n) => n.data.category === cat);
+					if (list.length === 0) return null;
+					return (
+						<div>
+							<p
+								class="kicker"
+								style="margin-top:52px;display:flex;justify-content:space-between;align-items:baseline;gap:16px;"
+							>
+								<span>{cat}</span>
+								<span>{list.length}</span>
+							</p>
+							<div class="rows">
+								{
+									list.map((n) => (
+										<a class="row" href={`/notes/${n.id}/`}>
+											<div>
+												<p class="r-title">{n.data.title}</p>
+												<p class="r-desc">{n.data.description}</p>
+												<p class="r-meta">
+													<span class="meta">{fmtDate(n.data.pubDate)}</span>
+												</p>
+											</div>
+											<span class="row-arrow">→</span>
+										</a>
+									))
+								}
+							</div>
+						</div>
+					);
+				})
+			}
+		</div>
+	</main>
+</Base>

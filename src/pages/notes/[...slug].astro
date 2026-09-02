@@ -1,0 +1,39 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { fmtDate } from '../../utils/date';
+
+export async function getStaticPaths() {
+	const notes = await getCollection('notes');
+	return notes.map((n) => ({ params: { slug: n.id }, props: n }));
+}
+
+type Props = CollectionEntry<'notes'>;
+
+const note = Astro.props;
+const { Content } = await render(note);
+const title = `${note.data.title} — BitForge`;
+---
+
+<Base title={title} description={note.data.description}>
+	<main class="article-wrap">
+		<a class="back-link" href="/notes">← Notes</a>
+
+		<header class="article-head">
+			<p class="kicker">{note.data.category}</p>
+			<h1>{note.data.title}</h1>
+			<p class="lede">{note.data.description}</p>
+			<div class="article-meta">
+				<span class="meta">{fmtDate(note.data.pubDate)}</span>
+				{note.data.updatedDate && (
+					<span class="meta">updated {fmtDate(note.data.updatedDate)}</span>
+				)}
+			</div>
+		</header>
+
+		<div class="prose">
+			<Content />
+		</div>
+	</main>
+</Base>

@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { fmtDate } from '../../utils/date';
+
+const projects = (await getCollection('projects')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<Base title="Projects — BitForge">
+	<main class="shell">
+		<section class="page-head">
+			<p class="kicker">Selected work</p>
+			<h1>Projects</h1>
+			<p class="lede">
+				Hardware and firmware I design, build, and measure — from power converters to
+				embedded control.
+			</p>
+		</section>
+
+		<div class="rows" style="margin-bottom:96px;">
+			{
+				projects.map((p) => (
+					<a class="row" href={`/projects/${p.id}/`}>
+						<div>
+							<p class="r-title">{p.data.title}</p>
+							<p class="r-desc">{p.data.description}</p>
+							<p class="r-meta">
+								<span class="meta">{p.data.category}</span>
+								<span class="meta">{p.data.technologies?.join(' · ')}</span>
+								<span class="meta">{fmtDate(p.data.pubDate)}</span>
+							</p>
+						</div>
+						<span class="row-arrow">→</span>
+					</a>
+				))
+			}
+		</div>
+	</main>
+</Base>

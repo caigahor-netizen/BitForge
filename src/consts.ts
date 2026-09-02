@@ -1,5 +1,11 @@
-// Place any global data in this file.
-// You can import this data from anywhere in your site by using the `import` keyword.
+export const SITE_TITLE = 'BitForge';
+export const SITE_DESCRIPTION =
+	'Personal engineering portfolio & knowledge base — hardware, embedded software, digital power, and systems.';
+export const SITE_AUTHOR = 'caigahor';
 
-export const SITE_TITLE = 'caigahor.com';
-export const SITE_DESCRIPTION = 'Welcome to my website!';
+export const NAV_LINKS = [
+	{ href: '/', label: 'Home' },
+	{ href: '/projects', label: 'Projects' },
+	{ href: '/notes', label: 'Notes' },
+	{ href: '/about', label: 'About' },
+] as const;
