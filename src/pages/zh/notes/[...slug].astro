@@ -1,24 +1,24 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { getCollection, render } from 'astro:content';
-import Base from '../../layouts/Base.astro';
-import { fmtDate } from '../../utils/date';
+import Base from '../../../layouts/Base.astro';
+import { fmtDate } from '../../../utils/date';
 
 export async function getStaticPaths() {
-	const notes = await getCollection('notes');
+	const notes = await getCollection('notesZh');
 	return notes.map((n) => ({ params: { slug: n.id }, props: n }));
 }
 
-type Props = CollectionEntry<'notes'>;
+type Props = CollectionEntry<'notesZh'>;
 
 const note = Astro.props;
 const { Content } = await render(note);
 const title = `${note.data.title} — BitForge`;
 ---
 
-<Base lang="en" title={title} description={note.data.description}>
+<Base lang="zh" title={title} description={note.data.description}>
 	<main class="article-wrap">
-		<a class="back-link" href="/notes">← Notes</a>
+		<a class="back-link" href="/zh/notes/">← 笔记</a>
 
 		<header class="article-head">
 			<p class="kicker">{note.data.category}</p>
@@ -27,7 +27,7 @@ const title = `${note.data.title} — BitForge`;
 			<div class="article-meta">
 				<span class="meta">{fmtDate(note.data.pubDate)}</span>
 				{note.data.updatedDate && (
-					<span class="meta">updated {fmtDate(note.data.updatedDate)}</span>
+					<span class="meta">更新于 {fmtDate(note.data.updatedDate)}</span>
 				)}
 			</div>
 		</header>

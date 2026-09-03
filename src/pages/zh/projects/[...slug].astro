@@ -1,24 +1,24 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { getCollection, render } from 'astro:content';
-import Base from '../../layouts/Base.astro';
-import { fmtDate } from '../../utils/date';
+import Base from '../../../layouts/Base.astro';
+import { fmtDate } from '../../../utils/date';
 
 export async function getStaticPaths() {
-	const projects = await getCollection('projects');
+	const projects = await getCollection('projectsZh');
 	return projects.map((p) => ({ params: { slug: p.id }, props: p }));
 }
 
-type Props = CollectionEntry<'projects'>;
+type Props = CollectionEntry<'projectsZh'>;
 
 const project = Astro.props;
 const { Content } = await render(project);
 const title = `${project.data.title} — BitForge`;
 ---
 
-<Base lang="en" title={title} description={project.data.description}>
+<Base lang="zh" title={title} description={project.data.description}>
 	<main class="article-wrap">
-		<a class="back-link" href="/projects">← Projects</a>
+		<a class="back-link" href="/zh/projects/">← 项目</a>
 
 		<header class="article-head">
 			<p class="kicker">{project.data.category}</p>

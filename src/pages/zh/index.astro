@@ -1,45 +1,48 @@
 ---
 import { getCollection } from 'astro:content';
-import Base from '../layouts/Base.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { fmtDate } from '../utils/date';
+import Base from '../../layouts/Base.astro';
+import { SITE_TITLE } from '../../consts';
+import { fmtDate } from '../../utils/date';
 
-const projects = (await getCollection('projects')).sort(
+const projects = (await getCollection('projectsZh')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
-const notes = (await getCollection('notes'))
+const notes = (await getCollection('notesZh'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
 ---
 
-<Base lang="en" title={SITE_TITLE} description={SITE_DESCRIPTION}>
+<Base
+	lang="zh"
+	title={SITE_TITLE}
+	description="个人工程 · 知识库 — 硬件、嵌入式软件、数字电源与系统。"
+>
 	<main class="shell">
 		<section class="home-hero">
-			<p class="kicker">Personal engineering · knowledge base</p>
-			<h1>Engineering at the boundary of hardware &amp; software.</h1>
+			<p class="kicker">个人工程 · 知识库</p>
+			<h1>在硬件与软件交界处，做工程。</h1>
 			<p class="lede">
-				Digital power, embedded systems, signal processing, Linux and networking —
-				built, measured, and documented.
+				数字电源、嵌入式系统、信号处理、Linux 与网络——设计、测量，并记录成文档。
 			</p>
 			<div class="hero-ctas">
-				<a class="link-row" href="/projects"
-					>View projects<span class="arr">→</span></a
+				<a class="link-row" href="/zh/projects/"
+					>查看项目<span class="arr">→</span></a
 				>
-				<a class="link-row" href="/notes">Read notes<span class="arr">→</span></a>
+				<a class="link-row" href="/zh/notes/">阅读笔记<span class="arr">→</span></a>
 			</div>
 		</section>
 
 		<section class="block">
 			<div class="block-head">
-				<h2 class="block-title">Projects</h2>
-				<a class="link-row" href="/projects"
-					>All projects<span class="arr">→</span></a
+				<h2 class="block-title">项目</h2>
+				<a class="link-row" href="/zh/projects/"
+					>全部项目<span class="arr">→</span></a
 				>
 			</div>
 			<div class="rows">
 				{
 					projects.map((p) => (
-						<a class="row" href={`/projects/${p.id}/`}>
+						<a class="row" href={`/zh/projects/${p.id}/`}>
 							<div>
 								<p class="r-title">{p.data.title}</p>
 								<p class="r-desc">{p.data.description}</p>
@@ -58,13 +61,13 @@ const notes = (await getCollection('notes'))
 
 		<section class="block">
 			<div class="block-head">
-				<h2 class="block-title">Notes</h2>
-				<a class="link-row" href="/notes">All notes<span class="arr">→</span></a>
+				<h2 class="block-title">笔记</h2>
+				<a class="link-row" href="/zh/notes/">全部笔记<span class="arr">→</span></a>
 			</div>
 			<div class="rows">
 				{
 					notes.map((n) => (
-						<a class="row" href={`/notes/${n.id}/`}>
+						<a class="row" href={`/zh/notes/${n.id}/`}>
 							<div>
 								<p class="r-title">{n.data.title}</p>
 								<p class="r-desc">{n.data.description}</p>

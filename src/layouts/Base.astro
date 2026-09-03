@@ -1,27 +1,67 @@
 ---
 import '../styles/global.css';
-import { NAV_LINKS, SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+type Lang = 'en' | 'zh';
 
 interface Props {
+	lang?: Lang;
 	title: string;
 	description?: string;
 }
 
-const { title, description = SITE_DESCRIPTION } = Astro.props;
+const { lang = 'en', title, description = SITE_DESCRIPTION } = Astro.props;
+const prefix = lang === 'zh' ? '/zh' : '';
 const path = Astro.url.pathname;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const year = new Date().getFullYear();
+
+const UI = {
+	en: {
+		nav: [
+			{ href: '/', label: 'Home' },
+			{ href: '/projects', label: 'Projects' },
+			{ href: '/notes', label: 'Notes' },
+			{ href: '/about', label: 'About' },
+		],
+		langLabel: '中文',
+		themeAria: 'Switch color theme',
+	},
+	zh: {
+		nav: [
+			{ href: '/', label: '首页' },
+			{ href: '/projects', label: '项目' },
+			{ href: '/notes', label: '笔记' },
+			{ href: '/about', label: '关于' },
+		],
+		langLabel: 'EN',
+		themeAria: '切换颜色主题',
+	},
+}[lang];
+
+// current path relative to this locale's root
+const rel = prefix
+	? path === prefix || path.startsWith(prefix + '/')
+		? path.slice(prefix.length) || '/'
+		: path
+	: path;
+
+const hrefOf = (h: string) => (h === '/' ? (prefix ? prefix + '/' : '/') : prefix + h);
+const isCurrent = (h: string) => (h === '/' ? rel === '/' : rel.startsWith(h));
+
+// link to the same page in the other language
+const altHref = lang === 'zh' ? (rel === '/' ? '/' : rel) : rel === '/' ? '/zh/' : '/zh' + rel;
+const altLabel = lang === 'zh' ? 'English' : '中文';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
-		<link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href="/rss.xml" />
 		<title>{title}</title>
 		<meta name="description" content={description} />
 		<meta name="generator" content={Astro.generator} />
@@ -52,24 +92,35 @@ const year = new Date().getFullYear();
 	<body>
 		<nav class="nav" aria-label="Main">
 			<div class="shell nav-inner">
-				<a class="brand" href="/">{SITE_TITLE}</a>
-				<div style="display:flex;align-items:center;gap:26px;">
+				<a class="brand" href={hrefOf('/')}>{SITE_TITLE}</a>
+				<div style="display:flex;align-items:center;gap:24px;">
 					<ul class="nav-links">
 						{
-							NAV_LINKS.map((l) => {
-								const current =
-									l.href === '/' ? path === '/' : path.startsWith(l.href);
-								return (
-									<li>
-										<a href={l.href} aria-current={current ? 'page' : undefined}>
-											{l.label}
-										</a>
-									</li>
-								);
-							})
+							UI.nav.map((l) => (
+								<li>
+									<a href={hrefOf(l.href)} aria-current={isCurrent(l.href) ? 'page' : undefined}>
+										{l.label}
+									</a>
+								</li>
+							))
 						}
 					</ul>
-					<button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch color theme">
+					<a
+						class="theme-toggle lang-link"
+						href={altHref}
+						aria-label={altLabel}
+						lang={lang === 'zh' ? 'en' : 'zh'}
+						hreflang={lang === 'zh' ? 'en' : 'zh'}
+					>
+						{UI.langLabel}
+					</a>
+					<button
+						class="theme-toggle"
+						id="theme-toggle"
+						type="button"
+						aria-label={UI.themeAria}
+						data-lang={lang}
+					>
 						<span id="theme-toggle-label">Theme</span>
 					</button>
 				</div>
@@ -93,13 +144,19 @@ const year = new Date().getFullYear();
 				var btn = document.getElementById('theme-toggle');
 				var lab = document.getElementById('theme-toggle-label');
 				if (!btn || !lab) return;
+				function labels() {
+					return btn.getAttribute('data-lang') === 'zh'
+						? { light: '浅色', dark: '深色' }
+						: { light: 'Light', dark: 'Dark' };
+				}
 				function current() {
 					var dt = document.documentElement.dataset.theme;
 					if (dt === 'dark' || dt === 'light') return dt;
 					return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 				}
 				function render() {
-					lab.textContent = current() === 'dark' ? 'Light' : 'Dark';
+					var l = labels();
+					lab.textContent = current() === 'dark' ? l.light : l.dark;
 				}
 				btn.addEventListener('click', function () {
 					var next = current() === 'dark' ? 'light' : 'dark';

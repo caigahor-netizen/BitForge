@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const areas = [
+	'数字电源',
+	'嵌入式软件',
+	'STM32 系统',
+	'DSP / 信号处理',
+	'电子 / PCB',
+	'Linux',
+	'网络',
+];
+---
+
+<Base lang="zh" title="关于 — BitForge" description="关于我。">
+	<main class="article-wrap">
+		<section class="page-head" style="padding-block-end:clamp(32px,5vh,56px);">
+			<p class="kicker">关于</p>
+			<h1>BitForge</h1>
+		</section>
+
+		<div class="prose">
+			<p>
+				我是一名工程师，专注电气与嵌入式系统——电源变换、微控制器，以及把两者串起来的固件。
+			</p>
+			<p>
+				这个站点是我的长期工程平台：用真实的架构、波形与实测结果记录项目，也保存那些日后想再找到的笔记。
+			</p>
+
+			<h2>专注方向</h2>
+			<ul>
+				{areas.map((a) => (
+					<li>{a}</li>
+				))}
+			</ul>
+
+			<h2>联系</h2>
+			<p>
+				在 <a href="https://github.com/caigahor-netizen">GitHub</a> 找到我，或发邮件到{' '}
+				<a href="mailto:caigahor@gmail.com">caigahor@gmail.com</a>。
+			</p>
+		</div>
+	</main>
+</Base>

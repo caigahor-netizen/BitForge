@@ -1,28 +1,27 @@
 ---
 import { getCollection } from 'astro:content';
-import Base from '../../layouts/Base.astro';
-import { fmtDate } from '../../utils/date';
+import Base from '../../../layouts/Base.astro';
+import { fmtDate } from '../../../utils/date';
 
-const projects = (await getCollection('projects')).sort(
+const projects = (await getCollection('projectsZh')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
 
-<Base lang="en" title="Projects — BitForge">
+<Base lang="zh" title="项目 — BitForge" description="硬件与固件项目。">
 	<main class="shell">
 		<section class="page-head">
-			<p class="kicker">Selected work</p>
-			<h1>Projects</h1>
+			<p class="kicker">精选项目</p>
+			<h1>项目</h1>
 			<p class="lede">
-				Hardware and firmware I design, build, and measure — from power converters to
-				embedded control.
+				我设计、搭建并测量的硬件与固件——从电源变换器到嵌入式控制。
 			</p>
 		</section>
 
 		<div class="rows" style="margin-bottom:96px;">
 			{
 				projects.map((p) => (
-					<a class="row" href={`/projects/${p.id}/`}>
+					<a class="row" href={`/zh/projects/${p.id}/`}>
 						<div>
 							<p class="r-title">{p.data.title}</p>
 							<p class="r-desc">{p.data.description}</p>

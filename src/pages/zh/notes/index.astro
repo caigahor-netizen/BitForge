@@ -1,19 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
-import Base from '../../layouts/Base.astro';
-import { fmtDate } from '../../utils/date';
+import Base from '../../../layouts/Base.astro';
+import { fmtDate } from '../../../utils/date';
 
-const CATEGORY_ORDER = [
-	'Digital Power',
-	'Embedded',
-	'Electronics',
-	'DSP',
-	'Linux',
-	'Networking',
-	'Software',
-];
+const CATEGORY_ORDER = ['数字电源', '嵌入式', '电子', 'DSP', 'Linux', '网络', '软件'];
 
-const all = (await getCollection('notes')).sort(
+const all = (await getCollection('notesZh')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 
@@ -25,14 +17,13 @@ const cats = [
 ];
 ---
 
-<Base lang="en" title="Notes — BitForge">
+<Base lang="zh" title="笔记 — BitForge" description="技术笔记。">
 	<main class="shell">
 		<section class="page-head">
-			<p class="kicker">Technical notes</p>
-			<h1>Notes</h1>
+			<p class="kicker">技术笔记</p>
+			<h1>笔记</h1>
 			<p class="lede">
-				Working notes from the bench and the terminal — kept short, specific, and
-				reproducible.
+				来自实验室与终端的工作笔记——短小、具体、可复现。
 			</p>
 		</section>
 
@@ -53,7 +44,7 @@ const cats = [
 							<div class="rows">
 								{
 									list.map((n) => (
-										<a class="row" href={`/notes/${n.id}/`}>
+										<a class="row" href={`/zh/notes/${n.id}/`}>
 											<div>
 												<p class="r-title">{n.data.title}</p>
 												<p class="r-desc">{n.data.description}</p>
