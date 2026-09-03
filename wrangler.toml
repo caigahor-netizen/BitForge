@@ -1,0 +1,7 @@
+# Static-site deployment: upload the Astro build output (dist/) as Cloudflare
+# Worker Assets. No runtime adapter is needed — the site is fully static.
+name = "bitforge"
+compatibility_date = "2025-06-01"
+
+[assets]
+directory = "./dist"
