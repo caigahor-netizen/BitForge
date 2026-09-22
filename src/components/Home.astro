@@ -1,0 +1,34 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ProjectCard from './ProjectCard.astro';
+import EngineeringVisual from './EngineeringVisual.astro';
+import { fmtDate } from '../utils/date';
+interface Props { lang: 'en' | 'zh'; }
+const { lang } = Astro.props;
+const zh = lang === 'zh';
+const prefix = zh ? '/zh' : '';
+const projects = (await getCollection(zh ? 'projectsZh' : 'projects')).sort((a,b) => b.data.pubDate.valueOf()-a.data.pubDate.valueOf());
+const notes = (await getCollection(zh ? 'notesZh' : 'notes')).sort((a,b) => b.data.pubDate.valueOf()-a.data.pubDate.valueOf()).slice(0,3);
+---
+<Base lang={lang} title={zh ? 'BitForge — 在软硬件之间，构建想法' : 'BitForge — Hardware meets software'}>
+  <main id="main-content" class="home-main">
+    <section class="shell home-hero">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span>{zh ? '独立工程实践 · 持续探索' : 'INDEPENDENT ENGINEERING · ALWAYS EXPLORING'}</p>
+        <h1>{zh ? '让想法，' : 'Where hardware'}<br/><span>{zh ? '跨越软硬件。' : 'meets software.'}</span></h1>
+        <p class="lede">{zh ? '从电路到代码，从构想到实测。探索数字电源、嵌入式系统，以及让它们协同工作的每一个细节。' : 'From circuits to code. Ideas to working systems. Exploring digital power, embedded software, and everything in between.'}</p>
+        <div class="hero-ctas"><a class="button button-primary" href={`${prefix}/projects/`}>{zh ? '探索项目' : 'Explore projects'} <span aria-hidden="true">↗</span></a><a class="button button-quiet" href={`${prefix}/notes/`}>{zh ? '阅读工程笔记' : 'Read the notes'} <span aria-hidden="true">→</span></a></div>
+        <p class="hero-footnote">{zh ? '设计。搭建。测量。记录。' : 'DESIGN. BUILD. MEASURE. DOCUMENT.'}</p>
+      </div>
+      <div class="hero-art"><div class="art-topline"><span>01 / ENGINEERING AT THE INTERSECTION</span><span>↗</span></div><EngineeringVisual /><div class="art-bottomline"><span>{zh ? '硬件 × 固件 × 系统' : 'HARDWARE × FIRMWARE × SYSTEMS'}</span><span class="art-indicator"></span></div></div>
+    </section>
+    <div class="expertise-strip"><div class="shell expertise-inner"><span class="kicker">{zh ? '探索领域' : 'THE TOOLBOX'}</span>{['Digital Power', 'Embedded Systems', 'Signal Processing', 'Linux & Networking'].map(t => <span>{t}</span>)}</div></div>
+    <section class="shell home-section">
+      <div class="section-heading"><div><p class="kicker">01 / {zh ? '工程实践' : 'SELECTED WORK'}</p><h2>{zh ? '把想法，做出来。' : 'Ideas, put to work.'}</h2></div><a class="link-row" href={`${prefix}/projects/`}>{zh ? '全部项目' : 'All projects'} <span aria-hidden="true">↗</span></a></div>
+      <div class="project-grid">{projects.map(project => <ProjectCard project={project} lang={lang} />)}</div>
+    </section>
+    <section class="notes-section"><div class="shell notes-layout"><div class="notes-intro"><p class="kicker">02 / {zh ? '工程笔记' : 'FIELD NOTES'}</p><h2>{zh ? '记录过程，' : 'A working'}<br/>{zh ? '积累答案。' : 'knowledge base.'}</h2><p>{zh ? '来自工作台与终端的思考。记录值得复用的方法、实验和细节。' : 'Lessons from the workbench and the terminal. Practical details worth keeping and sharing.'}</p><a class="link-row" href={`${prefix}/notes/`}>{zh ? '全部笔记' : 'All notes'} <span aria-hidden="true">↗</span></a></div><div class="note-list">{notes.map((n,i) => <a class="note-item" href={`${prefix}/notes/${n.id}/`}><span class="note-number">0{i+1}</span><div><p class="meta">{n.data.category} <span> / </span> <time datetime={n.data.pubDate.toISOString()}>{fmtDate(n.data.pubDate)}</time></p><h3>{n.data.title}</h3><p class="note-description">{n.data.description}</p></div><span class="row-arrow" aria-hidden="true">↗</span></a>)}</div></div></section>
+    <section class="shell about-band"><div><p class="kicker">03 / {zh ? '关于 BITFORGE' : 'BEHIND BITFORGE'}</p><h2>{zh ? '保持好奇，持续构建。' : 'Stay curious. Keep building.'}</h2><p>{zh ? '一个工程师的项目档案，也是不断生长的知识库。' : 'An engineer’s project archive. A knowledge base that keeps growing.'}</p></div><a class="button button-outline" href={`${prefix}/about/`}>{zh ? '了解更多' : 'More about me'} <span aria-hidden="true">↗</span></a></section>
+  </main>
+</Base>

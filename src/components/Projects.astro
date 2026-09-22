@@ -1,0 +1,16 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ProjectCard from './ProjectCard.astro';
+interface Props { lang: 'en' | 'zh'; }
+const { lang } = Astro.props;
+const zh = lang === 'zh';
+const projects = (await getCollection(zh ? 'projectsZh' : 'projects')).sort((a,b) => b.data.pubDate.valueOf()-a.data.pubDate.valueOf());
+---
+<Base lang={lang} title={zh ? '项目 — BitForge' : 'Projects — BitForge'} description={zh ? '从数字电源到嵌入式控制，探索 BitForge 的硬件与固件工程项目。' : 'Hardware and firmware projects, from digital power conversion to embedded control.'}>
+  <main id="main-content" class="shell">
+    <section class="page-head"><p class="kicker">{zh ? '工程实践 / SELECTED WORK' : 'ENGINEERING / SELECTED WORK'}</p><h1>{zh ? '从构想，到实践。' : 'Built to explore.'}</h1><p class="lede">{zh ? '我设计、搭建并测量的硬件与固件。从电源变换器到嵌入式控制，记录每一步探索。' : 'Hardware and firmware I design, build, and measure. From power converters to embedded control, one experiment at a time.'}</p></section>
+    <div class="section-heading"><span class="meta">{String(projects.length).padStart(2,'0')} {zh ? '个工程项目' : 'ENGINEERING PROJECTS'}</span><span class="meta">{zh ? '持续探索中' : 'WORK IN PROGRESS'}</span></div>
+    <div class="project-grid">{projects.map(project => <ProjectCard project={project} lang={lang} heading="h2" />)}</div>
+  </main>
+</Base>

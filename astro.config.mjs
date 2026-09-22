@@ -7,6 +7,8 @@ import { defineConfig } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://caigahor.com',
+	// Convert the CommonJS matcher before loading content in Vite's module runner.
+	vite: { environments: { astro: { optimizeDeps: { include: ['picomatch'] } } } },
 	i18n: {
 		defaultLocale: 'en',
 		locales: ['en', 'zh'],

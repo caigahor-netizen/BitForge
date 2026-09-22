@@ -1,0 +1,16 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import EngineeringVisual from './EngineeringVisual.astro';
+interface Props { project: CollectionEntry<'projects'> | CollectionEntry<'projectsZh'>; lang: 'en' | 'zh'; heading?: 'h2' | 'h3'; }
+const { project, lang, heading: Heading = 'h3' } = Astro.props;
+const prefix = lang === 'zh' ? '/zh' : '';
+---
+<a class="project-card" href={`${prefix}/projects/${project.id}/`}>
+  <div class="project-art"><EngineeringVisual variant={project.id} /><span class="art-label">{lang === 'zh' ? '概念示意' : 'CONCEPT STUDY'}</span><span class="card-open" aria-hidden="true">↗</span></div>
+  <div class="project-body">
+    <p class="kicker">{project.data.category}</p>
+    <Heading>{project.data.title}</Heading>
+    <p class="project-description">{project.data.description}</p>
+    <div class="tags">{project.data.technologies?.slice(0, 2).map(t => <span>{t}</span>)}</div>
+  </div>
+</a>

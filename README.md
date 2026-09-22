@@ -1,63 +1,36 @@
-# Astro Starter Kit: Blog
+# BitForge
 
-```sh
-npm create astro@latest -- --template blog
-```
+Personal engineering portfolio and knowledge base at https://caigahor.com.
+Built with Astro, Markdown/MDX, and static Cloudflare Worker Assets.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Development
 
-Features:
+Requires Node.js >=22.12.0. Install the lockfile dependencies with `npm ci`.
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+- `npm run dev -- --background` — start the background development server.
+- `npm run astro -- dev status` — inspect server status.
+- `npm run astro -- dev logs` — inspect server logs.
+- `npm run astro -- dev stop` — stop the server.
+- `npm run build` — generate the production site in `dist/`.
 
-## 🚀 Project Structure
+## Content and design
 
-Inside of your Astro project, you'll see the following folders and files:
+English routes live at `/`; Chinese routes at `/zh/`. Keep matching article
+IDs under `src/content/{projects,notes}` and `src/content/zh/{projects,notes}`
+so the language switch links to the equivalent article.
 
-```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
-```
+Shared layout: `src/layouts/Base.astro`. Design tokens and responsive styles:
+`src/styles/global.css`. Both homepages and project indexes share components.
+Project illustrations are SVG concept studies, not product photographs.
+Theme preference is saved locally; otherwise the OS theme is used.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Astro's content environment prebundles `picomatch` to support its CommonJS
+module in the Vite 8 module runner on Windows.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Deployment
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+Run the build before deployment. `wrangler.toml` defines the existing
+`bitforge` Worker and publishes `dist/` as static assets. Preserve this static
+configuration: an Astro Cloudflare runtime adapter is not required.
+Push the verified changes to the connected repository to trigger the existing
+Cloudflare build pipeline. Confirm the resulting production deployment.

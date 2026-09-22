@@ -1,173 +1,84 @@
 ---
 import '../styles/global.css';
 import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-
-type Lang = 'en' | 'zh';
-
-interface Props {
-	lang?: Lang;
-	title: string;
-	description?: string;
-}
-
-const { lang = 'en', title, description = SITE_DESCRIPTION } = Astro.props;
-const prefix = lang === 'zh' ? '/zh' : '';
+interface Props { lang?: 'en' | 'zh'; title: string; description?: string; }
+const { lang = 'en', title } = Astro.props;
+const zh = lang === 'zh';
+const description = Astro.props.description ?? (zh ? 'BitForge：个人工程作品与知识库。探索数字电源、嵌入式系统、信号处理、Linux 与网络。' : SITE_DESCRIPTION);
+const prefix = zh ? '/zh' : '';
 const path = Astro.url.pathname;
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const year = new Date().getFullYear();
-
-const UI = {
-	en: {
-		nav: [
-			{ href: '/', label: 'Home' },
-			{ href: '/projects', label: 'Projects' },
-			{ href: '/notes', label: 'Notes' },
-			{ href: '/about', label: 'About' },
-		],
-		langLabel: '中文',
-		themeAria: 'Switch color theme',
-	},
-	zh: {
-		nav: [
-			{ href: '/', label: '首页' },
-			{ href: '/projects', label: '项目' },
-			{ href: '/notes', label: '笔记' },
-			{ href: '/about', label: '关于' },
-		],
-		langLabel: 'EN',
-		themeAria: '切换颜色主题',
-	},
-}[lang];
-
-// current path relative to this locale's root
-const rel = prefix
-	? path === prefix || path.startsWith(prefix + '/')
-		? path.slice(prefix.length) || '/'
-		: path
-	: path;
-
-const hrefOf = (h: string) => (h === '/' ? (prefix ? prefix + '/' : '/') : prefix + h);
-const isCurrent = (h: string) => (h === '/' ? rel === '/' : rel.startsWith(h));
-
-// link to the same page in the other language
-const altHref = lang === 'zh' ? (rel === '/' ? '/' : rel) : rel === '/' ? '/zh/' : '/zh' + rel;
-const altLabel = lang === 'zh' ? 'English' : '中文';
+const rel = (zh ? path.replace(/^\/zh(?=\/|$)/, '') : path).replace(/\/$/, '') || '/';
+const hrefOf = (h: string) => `${prefix}${h === '/' ? '/' : h + '/'}`;
+const altHref = zh ? (rel === '/' ? '/' : rel + '/') : (rel === '/' ? '/zh/' : '/zh' + rel + '/');
+const canonical = new URL(path, Astro.site);
+const isNotFound = path === '/404' || path === '/404/' || path === '/404.html';
+const enUrl = new URL(zh ? altHref : path, Astro.site);
+const zhUrl = new URL(zh ? path : altHref, Astro.site);
+const nav = [{ href: '/', label: zh ? '首页' : 'Home' }, { href: '/projects', label: zh ? '项目' : 'Projects' }, { href: '/notes', label: zh ? '笔记' : 'Notes' }, { href: '/about', label: zh ? '关于' : 'About' }];
 ---
-
 <!doctype html>
 <html lang={lang}>
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<link rel="sitemap" href="/sitemap-index.xml" />
-		<title>{title}</title>
-		<meta name="description" content={description} />
-		<meta name="generator" content={Astro.generator} />
-		<link rel="canonical" href={canonical} />
-		<meta property="og:type" content="website" />
-		<meta property="og:site_name" content={SITE_TITLE} />
-		<meta property="og:title" content={title} />
-		<meta property="og:description" content={description} />
-		<meta property="og:url" content={Astro.url} />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-			rel="stylesheet"
-		/>
-		<script is:inline>
-			(function () {
-				var t = null;
-				try {
-					t = localStorage.getItem('bf-theme');
-				} catch (e) {}
-				if (t === 'light' || t === 'dark') {
-					document.documentElement.dataset.theme = t;
-				}
-			})();
-		</script>
-	</head>
-	<body>
-		<nav class="nav" aria-label="Main">
-			<div class="shell nav-inner">
-				<a class="brand" href={hrefOf('/')}>{SITE_TITLE}</a>
-				<div style="display:flex;align-items:center;gap:24px;">
-					<ul class="nav-links">
-						{
-							UI.nav.map((l) => (
-								<li>
-									<a href={hrefOf(l.href)} aria-current={isCurrent(l.href) ? 'page' : undefined}>
-										{l.label}
-									</a>
-								</li>
-							))
-						}
-					</ul>
-					<a
-						class="theme-toggle lang-link"
-						href={altHref}
-						aria-label={altLabel}
-						lang={lang === 'zh' ? 'en' : 'zh'}
-						hreflang={lang === 'zh' ? 'en' : 'zh'}
-					>
-						{UI.langLabel}
-					</a>
-					<button
-						class="theme-toggle"
-						id="theme-toggle"
-						type="button"
-						aria-label={UI.themeAria}
-						data-lang={lang}
-					>
-						<span id="theme-toggle-label">Theme</span>
-					</button>
-				</div>
-			</div>
-		</nav>
-
-		<slot />
-
-		<footer class="footer">
-			<div class="shell footer-inner">
-				<span>© {year} {SITE_AUTHOR} · {SITE_TITLE}</span>
-				<div class="footer-links">
-					<a href="https://github.com/caigahor-netizen">GitHub</a>
-					<a href="mailto:caigahor@gmail.com">Email</a>
-				</div>
-			</div>
-		</footer>
-
-		<script is:inline>
-			(function () {
-				var btn = document.getElementById('theme-toggle');
-				var lab = document.getElementById('theme-toggle-label');
-				if (!btn || !lab) return;
-				function labels() {
-					return btn.getAttribute('data-lang') === 'zh'
-						? { light: '浅色', dark: '深色' }
-						: { light: 'Light', dark: 'Dark' };
-				}
-				function current() {
-					var dt = document.documentElement.dataset.theme;
-					if (dt === 'dark' || dt === 'light') return dt;
-					return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-				}
-				function render() {
-					var l = labels();
-					lab.textContent = current() === 'dark' ? l.light : l.dark;
-				}
-				btn.addEventListener('click', function () {
-					var next = current() === 'dark' ? 'light' : 'dark';
-					document.documentElement.dataset.theme = next;
-					try {
-						localStorage.setItem('bf-theme', next);
-					} catch (e) {}
-					render();
-				});
-				render();
-			})();
-		</script>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={zh ? 'BitForge 中文笔记' : 'BitForge Notes'} href={zh ? '/zh/rss.xml' : '/rss.xml'} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+    {isNotFound ? <meta name="robots" content="noindex" /> : <><link rel="alternate" hreflang="en" href={enUrl} /><link rel="alternate" hreflang="zh" href={zhUrl} /><link rel="alternate" hreflang="x-default" href={enUrl} /></>}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_TITLE} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={zh ? 'zh_CN' : 'en_US'} />
+    <script is:inline>
+      try { const theme = localStorage.getItem('bf-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch {}
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">{zh ? '跳转到正文' : 'Skip to content'}</a>
+    <header class="nav">
+      <div class="shell nav-inner">
+        <a class="brand" href={hrefOf('/')} aria-label="BitForge">
+          <svg viewBox="0 0 32 32" width="30" height="30" fill="none" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor"/><path d="M10 8H17C24 8 24 16 17 16H10V8ZM10 16H18C25 16 25 24 18 24H10V16Z" stroke="var(--bg)" stroke-width="2.5"/></svg>
+          {SITE_TITLE}<span class="brand-dot">.</span>
+        </a>
+        <nav class="desktop-nav" aria-label={zh ? '主导航' : 'Main navigation'}><ul class="nav-links">{nav.map(l => <li><a href={hrefOf(l.href)} aria-current={(l.href === '/' ? rel === '/' : rel === l.href || rel.startsWith(l.href + '/')) ? 'page' : undefined}>{l.label}</a></li>)}</ul></nav>
+        <div class="nav-tools">
+          <a class="lang-link" href={isNotFound ? '/zh/' : altHref} lang={zh ? 'en' : 'zh'} hreflang={zh ? 'en' : 'zh'} aria-label={zh ? 'Switch to English' : '切换到中文'}>{zh ? 'EN' : '中文'}</a>
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label={zh ? '切换颜色主题' : 'Switch color theme'} data-lang={lang}><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2V4M12 20V22M2 12H4M20 12H22M5 5L6.5 6.5M17.5 17.5L19 19M5 19L6.5 17.5M17.5 6.5L19 5"/></svg></button>
+          <details class="mobile-menu"><summary aria-label={zh ? '展开导航菜单' : 'Open navigation menu'}><span></span><span></span></summary><nav aria-label={zh ? '移动导航' : 'Mobile navigation'}>{nav.map(l => <a href={hrefOf(l.href)} aria-current={(l.href === '/' ? rel === '/' : rel === l.href || rel.startsWith(l.href + '/')) ? 'page' : undefined}>{l.label}<span aria-hidden="true">↗</span></a>)}</nav></details>
+        </div>
+      </div>
+    </header>
+    <slot />
+    <footer class="footer"><div class="shell footer-inner"><div><a class="footer-brand" href={hrefOf('/')}>BitForge<span>.</span></a><p>{zh ? '从好奇出发，以工程作答。' : 'Driven by curiosity. Grounded in engineering.'}</p></div><div class="footer-links"><a href="https://github.com/caigahor-netizen">GitHub ↗</a><a href="mailto:caigahor@gmail.com">Email ↗</a><a href={zh ? '/zh/rss.xml' : '/rss.xml'}>RSS ↗</a></div></div><div class="shell footer-bottom"><span>© {new Date().getFullYear()} {SITE_AUTHOR} · BitForge</span><span>{zh ? '设计 · 搭建 · 测量 · 记录' : 'DESIGNED TO EXPLORE.'}</span></div></footer>
+    <script>
+      const button = document.getElementById('theme-toggle');
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+      const current = () => document.documentElement.dataset.theme ?? (media.matches ? 'dark' : 'light');
+      function render() {
+        const dark = current() === 'dark';
+        const zh = button?.dataset.lang === 'zh';
+        const label = zh ? (dark ? '切换至浅色主题' : '切换至深色主题') : (dark ? 'Switch to light theme' : 'Switch to dark theme');
+        button?.setAttribute('aria-label', label);
+        button?.setAttribute('title', label);
+      }
+      button?.addEventListener('click', () => {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        try { localStorage.setItem('bf-theme', next); } catch {}
+        render();
+      });
+      media.addEventListener('change', render);
+      render();
+      const menu = document.querySelector<HTMLDetailsElement>('.mobile-menu');
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && menu?.open) { menu.open = false; menu.querySelector('summary')?.focus(); } });
+      document.addEventListener('click', e => { if (menu?.open && e.target instanceof Node && !menu.contains(e.target)) menu.open = false; });
+    </script>
+  </body>
 </html>
