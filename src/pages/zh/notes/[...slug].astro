@@ -14,9 +14,10 @@ type Props = CollectionEntry<'notesZh'>;
 const note = Astro.props;
 const { Content } = await render(note);
 const title = `${note.data.title} — BitForge`;
+const hasTranslation = (await getCollection('notes')).some((entry) => entry.id === note.id);
 ---
 
-<Base lang="zh" title={title} description={note.data.description}>
+<Base lang="zh" title={title} description={note.data.description} hasTranslation={hasTranslation}>
 	<main id="main-content" class="article-wrap">
 		<a class="back-link" href="/zh/notes/">← 笔记</a>
 

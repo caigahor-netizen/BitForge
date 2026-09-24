@@ -1,15 +1,17 @@
 ---
 import '../styles/global.css';
 import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-interface Props { lang?: 'en' | 'zh'; title: string; description?: string; }
-const { lang = 'en', title } = Astro.props;
+interface Props { lang?: 'en' | 'zh'; title: string; description?: string; hasTranslation?: boolean; }
+const { lang = 'en', title, hasTranslation = true } = Astro.props;
 const zh = lang === 'zh';
 const description = Astro.props.description ?? (zh ? 'BitForge：个人工程作品与知识库。探索数字电源、嵌入式系统、信号处理、Linux 与网络。' : SITE_DESCRIPTION);
 const prefix = zh ? '/zh' : '';
 const path = Astro.url.pathname;
 const rel = (zh ? path.replace(/^\/zh(?=\/|$)/, '') : path).replace(/\/$/, '') || '/';
 const hrefOf = (h: string) => `${prefix}${h === '/' ? '/' : h + '/'}`;
-const altHref = zh ? (rel === '/' ? '/' : rel + '/') : (rel === '/' ? '/zh/' : '/zh' + rel + '/');
+const altHref = hasTranslation
+  ? (zh ? (rel === '/' ? '/' : rel + '/') : (rel === '/' ? '/zh/' : '/zh' + rel + '/'))
+  : (zh ? '/notes/' : '/zh/notes/');
 const canonical = new URL(path, Astro.site);
 const isNotFound = path === '/404' || path === '/404/' || path === '/404.html';
 const enUrl = new URL(zh ? altHref : path, Astro.site);
@@ -28,7 +30,7 @@ const nav = [{ href: '/', label: zh ? '首页' : 'Home' }, { href: '/projects', 
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonical} />
-    {isNotFound ? <meta name="robots" content="noindex" /> : <><link rel="alternate" hreflang="en" href={enUrl} /><link rel="alternate" hreflang="zh" href={zhUrl} /><link rel="alternate" hreflang="x-default" href={enUrl} /></>}
+    {isNotFound ? <meta name="robots" content="noindex" /> : hasTranslation && <><link rel="alternate" hreflang="en" href={enUrl} /><link rel="alternate" hreflang="zh" href={zhUrl} /><link rel="alternate" hreflang="x-default" href={enUrl} /></>}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE_TITLE} />
     <meta property="og:title" content={title} />
