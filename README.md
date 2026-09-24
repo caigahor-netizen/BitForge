@@ -15,9 +15,12 @@ Requires Node.js >=22.12.0. Install the lockfile dependencies with `npm ci`.
 
 ## Content and design
 
-English routes live at `/`; Chinese routes at `/zh/`. Keep matching article
-IDs under `src/content/{projects,notes}` and `src/content/zh/{projects,notes}`
-so the language switch links to the equivalent article.
+English routes live at `/`; Chinese routes at `/zh/`. If an article has both
+language versions, keep matching IDs under `src/content/{projects,notes}` and
+`src/content/zh/{projects,notes}` so the language switch links to its translation.
+Chinese-only notes link back to the English notes index.
+
+For the daily Obsidian-to-website workflow, see [Publishing notes](docs/publishing-notes.md).
 
 Shared layout: `src/layouts/Base.astro`. Design tokens and responsive styles:
 `src/styles/global.css`. Both homepages and project indexes share components.
